@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation} from '@angular/core';
 
 @Component({
   selector: 'app-todo-task',
@@ -23,5 +23,9 @@ export class TodoTaskComponent implements OnInit {
 
   done(task: string) {
     this.emitDone.emit(task);
+  }
+
+  getColor(): string {
+    return this.tasksList.length > 4 ? 'red' : 'green';
   }
 }
