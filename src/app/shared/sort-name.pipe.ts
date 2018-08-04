@@ -1,5 +1,5 @@
-import {Pipe, PipeTransform} from '@angular/core';
-import {Task} from '../models/task';
+import { Pipe, PipeTransform } from '@angular/core';
+import { Task } from '../models/task';
 
 @Pipe({
   name: 'sortName'

@@ -1,50 +1,44 @@
-import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
-import {Observable} from 'rxjs';
-import {Task} from '../models/task';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs/index';
+import { Observable } from 'rxjs/index';
+import { Subject } from 'rxjs/index';
+import { Task } from '../models/task';
+import { HttpService } from './http.service';
 
 @Injectable()
 export class TasksService {
 
-  private tasksList: Array<Task> = [];
-  private tasksDone: Array<Task> = [];
-
   private tasksListObs = new BehaviorSubject<Array<Task>>([]);
-  private tasksDoneObs = new BehaviorSubject<Array<Task>>([]);
 
-  constructor() {
-    console.log('TasksService');
-    this.tasksList = [
-      {name: 'Sprzątanie kuwety', created: new Date()},
-      {name: 'Nauka Angulara', created: new Date()},
-      {name: 'Podlewanie kwiatów', created: new Date()},
-      {name: 'Zakupy', created: new Date()}
-    ];
-    this.tasksListObs.next(this.tasksList);
+  constructor(private httpService: HttpService) {
+    this.httpService.getTasks().subscribe(list => {
+      this.tasksListObs.next(list);
+    });
   }
 
   add(task: Task) {
-    this.tasksList.push(task);
-    this.tasksListObs.next(this.tasksList);
+    const list = this.tasksListObs.getValue();
+    list.push(task);
+    this.tasksListObs.next(list);
   }
 
   remove(task: Task) {
-    this.tasksList = this.tasksList.filter(e => e !== task);
-    this.tasksListObs.next(this.tasksList);
+    const list = this.tasksListObs.getValue().filter(e => e !== task);
+    this.tasksListObs.next(list);
   }
 
   done(task: Task) {
-    this.tasksDone.push(task);
-    this.remove(task);
-    this.tasksDoneObs.next(this.tasksDone);
+    task.end = new Date().toLocaleDateString();
+    task.isDone = true;
+    const list = this.tasksListObs.getValue();
+    this.tasksListObs.next(list);
   }
 
   getTasksListObs(): Observable<Array<Task>> {
     return this.tasksListObs.asObservable();
   }
-
-  getTasksDoneObs(): Observable<Array<Task>> {
-    return this.tasksDoneObs.asObservable();
+  saveTasksInDb() {
+    this.httpService.saveTasks(this.tasksListObs.getValue());
   }
 
 }
