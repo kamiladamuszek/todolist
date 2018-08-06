@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs/index';
-import { Observable } from 'rxjs/index';
-import { Subject } from 'rxjs/index';
-import { Task } from '../models/task';
-import { HttpService } from './http.service';
+import {Injectable} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/index';
+import {Observable} from 'rxjs/index';
+import {Subject} from 'rxjs/index';
+import {Task} from '../models/task';
+import {HttpService} from './http.service';
 
 @Injectable()
 export class TasksService {
@@ -16,9 +16,8 @@ export class TasksService {
     });
   }
 
-  add(task: Task) {
-    const list = this.tasksListObs.getValue();
-    list.push(task);
+  add(task: Array<Task>) {
+    const list = this.tasksListObs.getValue().concat(task);
     this.tasksListObs.next(list);
   }
 
@@ -37,6 +36,7 @@ export class TasksService {
   getTasksListObs(): Observable<Array<Task>> {
     return this.tasksListObs.asObservable();
   }
+
   saveTasksInDb() {
     this.httpService.saveTasks(this.tasksListObs.getValue());
   }
