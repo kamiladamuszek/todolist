@@ -17,7 +17,11 @@ export class AddTaskComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.addForm = new FormGroup({
+    this.addForm = this.initForm();
+  }
+
+  initForm() {
+    return new FormGroup({
       taskName: new FormArray([new FormControl(null, Validators.required)])
     });
   }
@@ -25,13 +29,14 @@ export class AddTaskComponent implements OnInit {
   add() {
     const tasksList = this.createTaskList();
     this.tasksService.add(tasksList);
+    this.addForm = this.initForm();
   }
 
   createTaskList(): Array<Task> {
     const tasksList = new Array<Task>();
     const tasksArr = <[string]>this.addForm.get('taskName').value;
     tasksArr.forEach(taskName => {
-      const task = {name: '', created: new Date().toLocaleString(), isDone: false};
+      const task = {name: taskName, created: new Date().toLocaleString(), isDone: false};
       tasksList.push(task);
     });
     return tasksList;
